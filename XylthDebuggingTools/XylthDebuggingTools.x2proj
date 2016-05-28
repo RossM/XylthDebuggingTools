@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Guid>82150900-fbd4-4b88-ad8b-f80af9252992</Guid>
     <Name>Xylth Debugging Tools</Name>
-    <Description>Extra debugging tools for XCOM2 modders.</Description>
+    <Description>This mod adds some extra debugging conveniences for mod developers, particularly class mod developers. It is not intended for regular players.</Description>
     <SteamPublishID>0</SteamPublishID>
     <AssemblyName>XylthDebuggingTools</AssemblyName>
     <RootNamespace>XylthDebuggingTools</RootNamespace>
