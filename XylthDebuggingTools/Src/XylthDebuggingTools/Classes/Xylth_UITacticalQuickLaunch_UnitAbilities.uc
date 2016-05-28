@@ -42,7 +42,7 @@ simulated function InitAbilities(UITacticalQuickLaunch_UnitSlot Slot)
 
 	// Create list
 	m_kList = Spawn(class'UIList', m_kListContainer);
-	m_kList.InitList('List', 15, 75, 1225, 605);
+	m_kList.InitList('List', 0, 75, 1200, 530);
 
 	OriginatingSlot = Slot;
 	SoldierClassTemplate = class'X2SoldierClassTemplateManager'.static.GetSoldierClassTemplateManager().FindSoldierClassTemplate(Slot.m_nSoldierClassTemplate);
@@ -71,7 +71,7 @@ simulated function BuildSoldierAbilities()
 	local X2SoldierAbilityUnlockTemplate SoldierAbilityUnlock;
 
 	m_arrTemplateNames.Length = 0;
-	m_ypos = 15;
+	m_ypos = 0;
 	for (i = 0; i < SoldierClassTemplate.GetMaxConfiguredRank(); ++i)
 	{
 		AbilityTree = SoldierClassTemplate.GetAbilityTree(i);
@@ -149,10 +149,14 @@ simulated function BuildSoldierAbilities()
 			Display = AbilityTemplate.LocFriendlyName @ "(" $ string(m_arrTemplateNames[i]) $ ")";
 
 		AbilityBox = Spawn(class'UICheckbox', m_kList.ItemContainer).InitCheckbox('', Display, arrEarned[i]);
-		AbilityBox.SetTextStyle(class'UICheckbox'.const.STYLE_TEXT_ON_THE_RIGHT).SetPosition(10, m_ypos);
+		AbilityBox.SetTextStyle(class'UICheckbox'.const.STYLE_TEXT_ON_THE_RIGHT).SetHeight(32);
 		m_arrAbilityCheckboxes.AddItem(AbilityBox);
 		m_ypos += 32;
 	}
+
+	m_kList.RealizeItems();
+	m_kList.RealizeList();
+
 	`assert(m_arrAbilityCheckboxes.Length == m_arrTemplateNames.Length);
 }
 
