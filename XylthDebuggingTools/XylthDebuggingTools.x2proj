@@ -1962,6 +1962,9 @@
     <Content Include="Src\XylthDebuggingTools\Classes\Xylth_UITacticalQuickLaunch_UnitSlot.uc">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Src\XylthDebuggingTools\Classes\Xylth_XGAIBehavior.uc">
+      <SubType>Content</SubType>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildLocalExtensionPath)\XCOM2.targets" />
 </Project>
