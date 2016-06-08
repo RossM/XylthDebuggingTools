@@ -23,3 +23,77 @@ static event OnLoadedSavedGame()
 /// </summary>
 static event InstallNewCampaign(XComGameState StartState)
 {}
+
+exec function AddAbility(name AbilityName, optional EInventorySlot Slot = eInvSlot_Unknown)
+{
+	local XComTacticalController TacticalController;
+	local XComGameState NewGameState;
+	local XComGameState_Unit NewUnit;
+	local X2AbilityTemplate AbilityTemplate;
+	local XComGameState_Ability NewAbility;
+	local StateObjectReference AbilityRef, ActiveUnitRef, ItemRef;
+	local name AdditionalAbility;
+	local X2AbilityTemplateManager AbilityTemplateMan;
+	local UIScreenStack ScreenStack;
+	local UITacticalHUD TacticalHUD;
+	local UIArmory Armory;
+	local ClassAgnosticAbility AWCAbility;
+
+	AbilityTemplateMan = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
+
+	ScreenStack = `SCREENSTACK;
+
+	TacticalController = XComTacticalController(`BATTLE.GetALocalPlayerController());
+	Armory = UIArmory(ScreenStack.GetFirstInstanceOf(class'UIArmory'));
+
+	if (TacticalController != none)
+	{	
+		NewGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("XylthDebuggingTools - AddAbility");
+
+		ActiveUnitRef = TacticalController.GetActiveUnitStateRef();
+		NewUnit = XComGameState_Unit(NewGameState.CreateStateObject(class'XComGameState_Unit', ActiveUnitRef.ObjectID));
+
+		ItemRef = NewUnit.GetItemInSlot(Slot).GetReference();
+
+		AbilityTemplate = AbilityTemplateMan.FindAbilityTemplate(AbilityName);
+		AbilityRef = `TACTICALRULES.InitAbilityForUnit(AbilityTemplate, NewUnit, NewGameState, ItemRef);
+		NewAbility = XComGameState_Ability(NewGameState.GetGameStateForObjectID(AbilityRef.ObjectID));
+		NewAbility.CheckForPostBeginPlayActivation();
+
+		// Add additional abilities
+		foreach AbilityTemplate.AdditionalAbilities(AdditionalAbility)
+		{
+			AbilityTemplate = AbilityTemplateMan.FindAbilityTemplate(AdditionalAbility);
+
+			AbilityRef = `TACTICALRULES.InitAbilityForUnit(AbilityTemplate, NewUnit, NewGameState, ItemRef);
+			NewAbility = XComGameState_Ability(NewGameState.GetGameStateForObjectID(AbilityRef.ObjectID));
+			NewAbility.CheckForPostBeginPlayActivation();
+		}
+
+		NewGameState.AddStateObject(NewUnit);
+		`GAMERULES.SubmitGameState(NewGameState);
+
+		// Update perk icons
+		TacticalHUD = UITacticalHUD(ScreenStack.GetFirstInstanceOf(class'UITacticalHUD'));
+		if (TacticalHUD != none)
+			TacticalHUD.m_kPerks.UpdatePerks();
+	}
+	else if (Armory != none)
+	{
+		NewGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("XylthDebuggingTools - AddAbility");
+
+		ActiveUnitRef = Armory.GetUnitRef();		
+		NewUnit = XComGameState_Unit(NewGameState.CreateStateObject(class'XComGameState_Unit', ActiveUnitRef.ObjectID));
+
+		AWCAbility.AbilityType.AbilityName = AbilityName;
+		AWCAbility.AbilityType.ApplyToWeaponSlot = Slot;
+		AWCAbility.bUnlocked = true;
+
+		NewUnit.AWCAbilities.AddItem(AWCAbility);
+
+		NewGameState.AddStateObject(NewUnit);
+		`GAMERULES.SubmitGameState(NewGameState);
+
+		Armory.PopulateData();
+	}
+}
