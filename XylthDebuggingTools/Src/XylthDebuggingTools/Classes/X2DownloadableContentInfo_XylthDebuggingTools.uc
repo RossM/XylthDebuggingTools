@@ -97,3 +97,34 @@ exec function AddAbility(name AbilityName, optional EInventorySlot Slot = eInvSl
 		Armory.PopulateData();
 	}
 }
+
+exec function GrantKills(int NumKills)
+{
+	local UIScreenStack ScreenStack;
+	local XComGameState NewGameState;
+	local XComGameState_Unit NewUnit;
+	local UIArmory Armory;
+	local StateObjectReference ActiveUnitRef, EnemyRef;
+	local int i;
+
+	ScreenStack = `SCREENSTACK;
+	Armory = UIArmory(ScreenStack.GetFirstInstanceOf(class'UIArmory'));
+
+	if (Armory != none)
+	{
+		NewGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("XylthDebuggingTools - GrantKills");
+
+		ActiveUnitRef = Armory.GetUnitRef();		
+		NewUnit = XComGameState_Unit(NewGameState.CreateStateObject(class'XComGameState_Unit', ActiveUnitRef.ObjectID));
+
+		for (i = 0; i < NumKills; i++)
+			NewUnit.SimGetKill(EnemyRef);
+
+		NewUnit.bRankedUp = false;
+
+		NewGameState.AddStateObject(NewUnit);
+		`GAMERULES.SubmitGameState(NewGameState);
+
+		Armory.PopulateData();
+	}		
+}
