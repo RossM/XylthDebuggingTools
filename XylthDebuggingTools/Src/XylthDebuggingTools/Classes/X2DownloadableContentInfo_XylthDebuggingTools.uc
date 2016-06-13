@@ -128,3 +128,19 @@ exec function GrantKills(int NumKills)
 		Armory.PopulateData();
 	}		
 }
+
+exec function BTState()
+{
+	local X2AIBTBehaviorTree BT;
+	local int i;
+
+	BT = `BEHAVIORTREEMGR;
+
+	`Log("ActiveQueueID:" @ BT.ActiveQueueID);
+	`Log("bBTQueueTimerActive:" @ BT.bBTQueueTimerActive);
+	`Log("bWaitingOnSquadConcealment" @ BT.bWaitingOnSquadConcealment);
+	`Log("bWaitingOnEndMoveEvent" @ BT.bWaitingOnEndMoveEvent);
+	`Log("ActiveBTQueueEntry: (" $ BT.ActiveBTQueueEntry.ObjectID @ BT.ActiveBTQueueEntry.RunCount @ BT.ActiveBTQueueEntry.HistoryIndex @ BT.ActiveBTQueueEntry.Node $ ")");
+	for (i = 0; i < BT.ActiveBTQueue.Length; i++)
+		`Log("ActiveBTQueue["$i$"]: (" $ BT.ActiveBTQueue[i].ObjectID @ BT.ActiveBTQueue[i].RunCount @ BT.ActiveBTQueue[i].HistoryIndex @ BT.ActiveBTQueue[i].Node $ ")");
+}
