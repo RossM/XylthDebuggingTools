@@ -1,4 +1,4 @@
-class Xylth_UITacticalQuickLaunch_UnitAbilities extends UITacticalQuickLaunch_UnitAbilities;
+class Xylth_UITacticalQuickLaunch_UnitAbilities extends UITacticalQuickLaunch_UnitAbilities config(GameData);
 
 var private X2SoldierClassTemplate  SoldierClassTemplate;
 var private array<SCATProgression>  arrProgression;
@@ -15,6 +15,8 @@ var private UIButton m_kCancelButton;
 var private UIScrollbar m_kScrollbar;
 var private UIMask m_kMask;
 var private array<UICheckbox>   m_arrAbilityCheckboxes;
+
+var config array<SoldierClassAbilityType> ExtraAbilities;
 
 simulated function InitAbilities(UITacticalQuickLaunch_UnitSlot Slot)
 {
@@ -122,6 +124,23 @@ simulated function BuildSoldierAbilities()
 
 	// Add AWC-only abilities
 	ExtraCrossClassAbilities = class'X2SoldierClassTemplateManager'.default.ExtraCrossClassAbilities;
+	foreach ExtraCrossClassAbilities(CrossClassAbility)
+	{
+		m_arrTemplateNames.AddItem(CrossClassAbility.AbilityName);
+		arrEarned.AddItem(false);
+
+		foreach AWCAbilities(ExtraAbility)
+		{
+			if (ExtraAbility.AbilityType.AbilityName == CrossClassAbility.AbilityName)
+			{
+				arrEarned[arrEarned.Length - 1] = true;
+				break;
+			}
+		}
+	}
+
+	// Add extra abilities
+	ExtraCrossClassAbilities = ExtraAbilities;
 	foreach ExtraCrossClassAbilities(CrossClassAbility)
 	{
 		m_arrTemplateNames.AddItem(CrossClassAbility.AbilityName);
