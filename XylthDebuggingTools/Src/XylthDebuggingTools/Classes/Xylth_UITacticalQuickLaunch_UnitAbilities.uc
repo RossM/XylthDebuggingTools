@@ -232,6 +232,16 @@ simulated function SaveButton(UIButton kButton)
 					}
 				}
 
+				ExtraCrossClassAbilities = ExtraAbilities;
+				foreach ExtraCrossClassAbilities(CrossClassAbility)
+				{
+					if (CrossClassAbility.AbilityName == m_arrTemplateNames[i])
+					{
+						ExtraAbility.AbilityType = CrossClassAbility;
+						break;
+					}
+				}
+
 				AWCAbilities.AddItem(ExtraAbility);
 			}
 		}
