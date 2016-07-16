@@ -144,3 +144,68 @@ exec function BTState()
 	for (i = 0; i < BT.ActiveBTQueue.Length; i++)
 		`Log("ActiveBTQueue["$i$"]: (" $ BT.ActiveBTQueue[i].ObjectID @ BT.ActiveBTQueue[i].RunCount @ BT.ActiveBTQueue[i].HistoryIndex @ BT.ActiveBTQueue[i].Node $ ")");
 }
+
+// TODO: Finish this
+exec function DumpAbilityTemplate(name DataName)
+{
+	local X2AbilityTemplate Template;
+	local X2AbilityCost Cost;
+	local X2AbilityCost_ActionPoints ActionPointsCost;
+	local X2AbilityCost_Ammo AmmoCost;
+	local X2AbilityCost_Charges ChargesCost;
+	local X2AbilityCost_ReserveActionPoints ReserveActionPointsCost;
+	local name OtherName;
+
+	Template = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager().FindAbilityTemplate(DataName);
+
+	`Log("===" @ Template @ "===");
+	`Log("AbilityCharges:" @ Template.AbilityCharges);
+	foreach Template.AbilityCosts(Cost)
+	{
+		`Log("AbilityCost:" @ Cost);
+		`Log("  bFreeCost:" @ Cost.bFreeCost);
+
+		ActionPointsCost = X2AbilityCost_ActionPoints(Cost);
+		if (ActionPointsCost != none)
+		{
+			`Log("  iNumPoints:" @ ActionPointsCost.iNumPoints);
+			`Log("  bAddWeaponTypicalCost:" @ ActionPointsCost.bAddWeaponTypicalCost);
+			`Log("  bConsumeAllPoints:" @ ActionPointsCost.bConsumeAllPoints);
+			`Log("  bMoveCost:" @ ActionPointsCost.bMoveCost);
+			foreach ActionPointsCost.AllowedTypes(OtherName)
+				`Log("  AllowedType:" @ OtherName);
+			foreach ActionPointsCost.DoNotConsumeAllEffects(OtherName)
+				`Log("  DoNotConsumeAllEffect:" @ OtherName);
+			foreach ActionPointsCost.DoNotConsumeAllSoldierAbilities(OtherName)
+				`Log("  DoNotConsumeAllSoldierAbilitie:" @ OtherName);
+		}
+
+		AmmoCost = X2AbilityCost_Ammo(Cost);
+		if (AmmoCost != none)
+		{
+			`Log("  iAmmo:" @ AmmoCost.iAmmo);
+			`Log("  UseLoadedAmmo:" @ AmmoCost.UseLoadedAmmo);
+			`Log("  bReturnChargesError:" @ AmmoCost.bReturnChargesError);
+		}
+
+		ChargesCost = X2AbilityCost_Charges(Cost);
+		if (ChargesCost != none)
+		{
+			`Log("  NumCharges:" @ ChargesCost.NumCharges);
+			foreach ChargesCost.SharedAbilityCharges(OtherName)
+				`log("  SharedAbilityCharges:" @ OtherName);
+			`Log("  bOnlyOnHit:" @ ChargesCost.bOnlyOnHit);
+		}
+
+		ReserveActionPointsCost = X2AbilityCost_ReserveActionPoints(Cost);
+		if (ReserveActionPointsCost != none)
+		{
+			`Log("  iNumPoints:" @ ReserveActionPointsCost.iNumPoints);
+			foreach ReserveActionPointsCost.AllowedTypes(OtherName)
+				`Log("  AllowedType:" @ OtherName);
+		}
+	}
+
+	`Log("AbilityCooldown:" @ Template.AbilityCooldown);
+	`Log("AbilityToHitCalc:" @ Template.AbilityToHitCalc);
+}
