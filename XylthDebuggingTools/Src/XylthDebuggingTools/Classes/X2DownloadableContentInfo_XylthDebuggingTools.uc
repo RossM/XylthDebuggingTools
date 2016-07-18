@@ -161,7 +161,7 @@ exec function DumpAbilityTemplate(name DataName)
 	`Log("AbilityCharges:" @ Template.AbilityCharges);
 	foreach Template.AbilityCosts(Cost)
 	{
-		`Log("AbilityCosts:" @ Cost);
+		`Log("AbilityCosts:" @ Cost @ " (" $ Cost.class $ ")");
 		DumpCost(Cost);
 	}
 
@@ -171,33 +171,33 @@ exec function DumpAbilityTemplate(name DataName)
 
 	foreach Template.AbilityShooterConditions(Condition)
 	{
-		`Log("AbilityShooterConditions:" @ Condition);
+		`Log("AbilityShooterConditions:" @ Condition @ " (" $ Condition.class $ ")");
 		DumpCondition(Condition);
 	}
 	foreach Template.AbilityTargetConditions(Condition)
 	{
-		`Log("AbilityTargetConditions:" @ Condition);
+		`Log("AbilityTargetConditions:" @ Condition @ " (" $ Condition.class $ ")");
 		DumpCondition(Condition);
 	}
 	foreach Template.AbilityMultiTargetConditions(Condition)
 	{
-		`Log("AbilityMultiTargetConditions:" @ Condition);
+		`Log("AbilityMultiTargetConditions:" @ Condition @ " (" $ Condition.class $ ")");
 		DumpCondition(Condition);
 	}
 
 	foreach Template.AbilityTargetEffects(Effect)
 	{
-		`Log("AbilityTargetEffects:" @ Effect);
+		`Log("AbilityTargetEffects:" @ Effect @ " (" $ Effect.class $ ")");
 		DumpEffect(Effect);
 	}
 	foreach Template.AbilityMultiTargetEffects(Effect)
 	{
-		`Log("AbilityMultiTargetEffects:" @ Effect);
+		`Log("AbilityMultiTargetEffects:" @ Effect @ " (" $ Effect.class $ ")");
 		DumpEffect(Effect);
 	}
 	foreach Template.AbilityShooterEffects(Effect)
 	{
-		`Log("AbilityShooterEffects:" @ Effect);
+		`Log("AbilityShooterEffects:" @ Effect @ " (" $ Effect.class $ ")");
 		DumpEffect(Effect);
 	}
 
@@ -207,7 +207,8 @@ exec function DumpAbilityTemplate(name DataName)
 
 	foreach Template.AbilityTriggers(Trigger)
 	{
-		`Log("AbilityTriggers:" @ Trigger);
+		`Log("AbilityTriggers:" @ Trigger @ " (" $ Trigger.class $ ")");
+		DumpTrigger(Trigger);
 	}
 	
 	foreach Template.AbilityEventListeners(EventListener)
@@ -294,3 +295,26 @@ static function DumpEffect(X2Effect Effect)
 {
 }
 
+static function DumpTrigger(X2AbilityTrigger Trigger)
+{
+	local X2AbilityTrigger_Event EventTrigger;
+	local X2AbilityTrigger_EventListener EventListenerTrigger;
+
+	EventTrigger = X2AbilityTrigger_Event(Trigger);
+	if (EventTrigger != none)
+	{
+		`Log("  EventObserverClass:" @ EventTrigger.EventObserverClass);
+		`Log("  MethodName:" @ EventTrigger.MethodName);
+	}
+
+	EventListenerTrigger = X2AbilityTrigger_EventListener(Trigger);
+	if (EventListenerTrigger != none)
+	{
+		`Log("  EventID:" @ EventListenerTrigger.ListenerData.EventID);
+		`Log("  EventFn:" @ EventListenerTrigger.ListenerData.EventFn);
+		`Log("  Deferral:" @ EventListenerTrigger.ListenerData.Deferral);
+		`Log("  Filter:" @ EventListenerTrigger.ListenerData.Filter);
+		`Log("  OverrideListenerSource:" @ EventListenerTrigger.ListenerData.OverrideListenerSource);
+		`Log("  Priority:" @ EventListenerTrigger.ListenerData.Priority);	
+	}
+}
