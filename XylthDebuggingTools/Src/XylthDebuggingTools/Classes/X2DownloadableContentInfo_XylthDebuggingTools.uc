@@ -154,6 +154,10 @@ exec function DumpAbilityTemplate(name DataName)
 	local X2AbilityCost_Ammo AmmoCost;
 	local X2AbilityCost_Charges ChargesCost;
 	local X2AbilityCost_ReserveActionPoints ReserveActionPointsCost;
+	local X2Condition Condition;
+	local X2Effect Effect;
+	local X2AbilityTrigger Trigger;
+	local AbilityEventListener EventListener;
 	local name OtherName;
 
 	Template = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager().FindAbilityTemplate(DataName);
@@ -162,7 +166,7 @@ exec function DumpAbilityTemplate(name DataName)
 	`Log("AbilityCharges:" @ Template.AbilityCharges);
 	foreach Template.AbilityCosts(Cost)
 	{
-		`Log("AbilityCost:" @ Cost);
+		`Log("AbilityCosts:" @ Cost);
 		`Log("  bFreeCost:" @ Cost.bFreeCost);
 
 		ActionPointsCost = X2AbilityCost_ActionPoints(Cost);
@@ -208,4 +212,49 @@ exec function DumpAbilityTemplate(name DataName)
 
 	`Log("AbilityCooldown:" @ Template.AbilityCooldown);
 	`Log("AbilityToHitCalc:" @ Template.AbilityToHitCalc);
+	`Log("AbilityToHitOwnerOnMissCalc:" @ Template.AbilityToHitOwnerOnMissCalc);
+
+	foreach Template.AbilityShooterConditions(Condition)
+	{
+		`Log("AbilityShooterConditions:" @ Condition);
+	}
+	foreach Template.AbilityTargetConditions(Condition)
+	{
+		`Log("AbilityTargetConditions:" @ Condition);
+	}
+	foreach Template.AbilityMultiTargetConditions(Condition)
+	{
+		`Log("AbilityMultiTargetConditions:" @ Condition);
+	}
+
+	foreach Template.AbilityTargetEffects(Effect)
+	{
+		`Log("AbilityTargetEffects:" @ Effect);
+	}
+	foreach Template.AbilityMultiTargetEffects(Effect)
+	{
+		`Log("AbilityMultiTargetEffects:" @ Effect);
+	}
+	foreach Template.AbilityShooterEffects(Effect)
+	{
+		`Log("AbilityShooterEffects:" @ Effect);
+	}
+
+	`Log("AbilityTargetStyle:" @ Template.AbilityTargetStyle);
+	`Log("AbilityMultiTargetStyle:" @ Template.AbilityMultiTargetStyle);
+	`Log("AbilityPassiveAOEStyle:" @ Template.AbilityPassiveAOEStyle);
+
+	foreach Template.AbilityTriggers(Trigger)
+	{
+		`Log("AbilityTriggers:" @ Trigger);
+	}
+	
+	foreach Template.AbilityEventListeners(EventListener)
+	{
+		`Log("AbilityEventListeners:");
+		`Log("  EventID:" @ EventListener.EventID);
+		`Log("  EventFn:" @ EventListener.EventFn);
+		`Log("  Deferral:" @ EventListener.Deferral);
+		`Log("  Filter:" @ EventListener.Filter);
+	}
 }
