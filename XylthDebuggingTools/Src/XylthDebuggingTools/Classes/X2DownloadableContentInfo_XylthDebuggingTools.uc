@@ -150,15 +150,10 @@ exec function DumpAbilityTemplate(name DataName)
 {
 	local X2AbilityTemplate Template;
 	local X2AbilityCost Cost;
-	local X2AbilityCost_ActionPoints ActionPointsCost;
-	local X2AbilityCost_Ammo AmmoCost;
-	local X2AbilityCost_Charges ChargesCost;
-	local X2AbilityCost_ReserveActionPoints ReserveActionPointsCost;
 	local X2Condition Condition;
 	local X2Effect Effect;
 	local X2AbilityTrigger Trigger;
 	local AbilityEventListener EventListener;
-	local name OtherName;
 
 	Template = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager().FindAbilityTemplate(DataName);
 
@@ -167,47 +162,7 @@ exec function DumpAbilityTemplate(name DataName)
 	foreach Template.AbilityCosts(Cost)
 	{
 		`Log("AbilityCosts:" @ Cost);
-		`Log("  bFreeCost:" @ Cost.bFreeCost);
-
-		ActionPointsCost = X2AbilityCost_ActionPoints(Cost);
-		if (ActionPointsCost != none)
-		{
-			`Log("  iNumPoints:" @ ActionPointsCost.iNumPoints);
-			`Log("  bAddWeaponTypicalCost:" @ ActionPointsCost.bAddWeaponTypicalCost);
-			`Log("  bConsumeAllPoints:" @ ActionPointsCost.bConsumeAllPoints);
-			`Log("  bMoveCost:" @ ActionPointsCost.bMoveCost);
-			foreach ActionPointsCost.AllowedTypes(OtherName)
-				`Log("  AllowedType:" @ OtherName);
-			foreach ActionPointsCost.DoNotConsumeAllEffects(OtherName)
-				`Log("  DoNotConsumeAllEffect:" @ OtherName);
-			foreach ActionPointsCost.DoNotConsumeAllSoldierAbilities(OtherName)
-				`Log("  DoNotConsumeAllSoldierAbilitie:" @ OtherName);
-		}
-
-		AmmoCost = X2AbilityCost_Ammo(Cost);
-		if (AmmoCost != none)
-		{
-			`Log("  iAmmo:" @ AmmoCost.iAmmo);
-			`Log("  UseLoadedAmmo:" @ AmmoCost.UseLoadedAmmo);
-			`Log("  bReturnChargesError:" @ AmmoCost.bReturnChargesError);
-		}
-
-		ChargesCost = X2AbilityCost_Charges(Cost);
-		if (ChargesCost != none)
-		{
-			`Log("  NumCharges:" @ ChargesCost.NumCharges);
-			foreach ChargesCost.SharedAbilityCharges(OtherName)
-				`log("  SharedAbilityCharges:" @ OtherName);
-			`Log("  bOnlyOnHit:" @ ChargesCost.bOnlyOnHit);
-		}
-
-		ReserveActionPointsCost = X2AbilityCost_ReserveActionPoints(Cost);
-		if (ReserveActionPointsCost != none)
-		{
-			`Log("  iNumPoints:" @ ReserveActionPointsCost.iNumPoints);
-			foreach ReserveActionPointsCost.AllowedTypes(OtherName)
-				`Log("  AllowedType:" @ OtherName);
-		}
+		DumpCost(Cost);
 	}
 
 	`Log("AbilityCooldown:" @ Template.AbilityCooldown);
@@ -217,27 +172,33 @@ exec function DumpAbilityTemplate(name DataName)
 	foreach Template.AbilityShooterConditions(Condition)
 	{
 		`Log("AbilityShooterConditions:" @ Condition);
+		DumpCondition(Condition);
 	}
 	foreach Template.AbilityTargetConditions(Condition)
 	{
 		`Log("AbilityTargetConditions:" @ Condition);
+		DumpCondition(Condition);
 	}
 	foreach Template.AbilityMultiTargetConditions(Condition)
 	{
 		`Log("AbilityMultiTargetConditions:" @ Condition);
+		DumpCondition(Condition);
 	}
 
 	foreach Template.AbilityTargetEffects(Effect)
 	{
 		`Log("AbilityTargetEffects:" @ Effect);
+		DumpEffect(Effect);
 	}
 	foreach Template.AbilityMultiTargetEffects(Effect)
 	{
 		`Log("AbilityMultiTargetEffects:" @ Effect);
+		DumpEffect(Effect);
 	}
 	foreach Template.AbilityShooterEffects(Effect)
 	{
 		`Log("AbilityShooterEffects:" @ Effect);
+		DumpEffect(Effect);
 	}
 
 	`Log("AbilityTargetStyle:" @ Template.AbilityTargetStyle);
@@ -258,3 +219,78 @@ exec function DumpAbilityTemplate(name DataName)
 		`Log("  Filter:" @ EventListener.Filter);
 	}
 }
+
+static function DumpCost(X2AbilityCost Cost)
+{
+	local X2AbilityCost_ActionPoints ActionPointsCost;
+	local X2AbilityCost_Ammo AmmoCost;
+	local X2AbilityCost_Charges ChargesCost;
+	local X2AbilityCost_ReserveActionPoints ReserveActionPointsCost;
+	local name OtherName;
+
+	`Log("  bFreeCost:" @ Cost.bFreeCost);
+
+	ActionPointsCost = X2AbilityCost_ActionPoints(Cost);
+	if (ActionPointsCost != none)
+	{
+		`Log("  iNumPoints:" @ ActionPointsCost.iNumPoints);
+		`Log("  bAddWeaponTypicalCost:" @ ActionPointsCost.bAddWeaponTypicalCost);
+		`Log("  bConsumeAllPoints:" @ ActionPointsCost.bConsumeAllPoints);
+		`Log("  bMoveCost:" @ ActionPointsCost.bMoveCost);
+		foreach ActionPointsCost.AllowedTypes(OtherName)
+			`Log("  AllowedType:" @ OtherName);
+		foreach ActionPointsCost.DoNotConsumeAllEffects(OtherName)
+			`Log("  DoNotConsumeAllEffect:" @ OtherName);
+		foreach ActionPointsCost.DoNotConsumeAllSoldierAbilities(OtherName)
+			`Log("  DoNotConsumeAllSoldierAbilitie:" @ OtherName);
+	}
+
+	AmmoCost = X2AbilityCost_Ammo(Cost);
+	if (AmmoCost != none)
+	{
+		`Log("  iAmmo:" @ AmmoCost.iAmmo);
+		`Log("  UseLoadedAmmo:" @ AmmoCost.UseLoadedAmmo);
+		`Log("  bReturnChargesError:" @ AmmoCost.bReturnChargesError);
+	}
+
+	ChargesCost = X2AbilityCost_Charges(Cost);
+	if (ChargesCost != none)
+	{
+		`Log("  NumCharges:" @ ChargesCost.NumCharges);
+		foreach ChargesCost.SharedAbilityCharges(OtherName)
+			`log("  SharedAbilityCharges:" @ OtherName);
+		`Log("  bOnlyOnHit:" @ ChargesCost.bOnlyOnHit);
+	}
+
+	ReserveActionPointsCost = X2AbilityCost_ReserveActionPoints(Cost);
+	if (ReserveActionPointsCost != none)
+	{
+		`Log("  iNumPoints:" @ ReserveActionPointsCost.iNumPoints);
+		foreach ReserveActionPointsCost.AllowedTypes(OtherName)
+			`Log("  AllowedType:" @ OtherName);
+	}
+}
+
+static function DumpCondition(X2Condition Condition)
+{
+	local X2Condition_UnitEffects UnitEffectsCondition;
+	local EffectReason Effect;
+
+	UnitEffectsCondition = X2Condition_UnitEffects(Condition);
+	if (UnitEffectsCondition != none)
+	{
+		foreach UnitEffectsCondition.ExcludeEffects(Effect)
+		{
+			`Log("  ExcludeEffects:" @ Effect.EffectName $ "," @ Effect.Reason);
+		}
+		foreach UnitEffectsCondition.RequireEffects(Effect)
+		{
+			`Log("  RequireEffects:" @ Effect.EffectName $ "," @ Effect.Reason);
+		}
+	}
+}
+
+static function DumpEffect(X2Effect Effect)
+{
+}
+
