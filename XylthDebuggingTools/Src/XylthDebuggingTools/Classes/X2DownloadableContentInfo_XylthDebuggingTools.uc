@@ -318,3 +318,75 @@ static function DumpTrigger(X2AbilityTrigger Trigger)
 		`Log("  Priority:" @ EventListenerTrigger.ListenerData.Priority);	
 	}
 }
+
+exec function Respec()
+{
+	local UIArmory Armory;
+	local StateObjectReference UnitRef;
+	local XComGameState_Unit UnitState;
+	local XComGameState NewGameState;
+	local int i;
+	local XComGameStateHistory History;
+
+	History = `XCOMHISTORY;
+
+	Armory = UIArmory(`SCREENSTACK.GetFirstInstanceOf(class'UIArmory'));
+	if (Armory == none)
+		return;
+
+	UnitRef = Armory.GetUnitRef();
+
+	UnitState = XComGameState_Unit(History.GetGameStateForObjectID(UnitRef.ObjectID));
+	if (UnitState == none)
+		return;
+	
+	NewGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("Respec Soldier");
+
+	// Set the soldier status back to active, and rank them up to their new class
+	UnitState = XComGameState_Unit(NewGameState.CreateStateObject(class'XComGameState_Unit', UnitState.ObjectID));
+	UnitState.ResetSoldierAbilities(); // First clear all of the current abilities
+	for (i = 0; i < UnitState.GetSoldierClassTemplate().GetAbilityTree(0).Length; ++i) // Then give them their squaddie ability back
+	{
+		UnitState.BuySoldierProgressionAbility(NewGameState, 0, i);
+	}
+	NewGameState.AddStateObject(UnitState);
+
+	if (NewGameState.GetNumGameStateObjects() > 0)
+	{
+		`XCOMGAME.GameRuleset.SubmitGameState(NewGameState);
+	}
+	else
+	{
+		History.CleanupPendingGameState(NewGameState);
+	}
+
+	Armory.PopulateData();
+}
+
+exec function DumpXPInfo()
+{
+	local XComGameStateHistory History;
+	local XComGameState_Unit UnitState;
+	local XComGameState_HeadquartersXCom XComHQ;
+	local array<XComGameState_Unit> Soldiers;
+	local UnitValue MissionExperienceValue, OfficerBonusKillsValue;
+
+	History = `XCOMHISTORY;
+	XComHQ = XComGameState_HeadquartersXCom(History.GetSingleGameStateObjectForClass(class' XComGameState_HeadquartersXCom'));
+	Soldiers = XComHQ.GetSoldiers();
+
+	foreach Soldiers(UnitState)
+	{
+		UnitState.GetUnitValue('MissionExperience', MissionExperienceValue);
+		UnitState.GetUnitValue('OfficerBonusKills', OfficerBonusKillsValue);
+		
+		`Log("CSV," $
+			UnitState.GetName(eNameType_FullNick) $ "," $ 
+			UnitState.GetSoldierClassTemplateName() $ "," $ 
+			UnitState.GetNumMissions() $ "," $ 
+			UnitState.GetNumKills() $ "," $
+			UnitState.GetKillAssists().Length $ "," $ 
+			MissionExperienceValue.fValue $ "," $
+			OfficerBonusKillsValue.fValue);
+	}
+}
