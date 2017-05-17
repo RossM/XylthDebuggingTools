@@ -7,6 +7,7 @@
     <SteamPublishID>0</SteamPublishID>
     <AssemblyName>XylthDebuggingTools</AssemblyName>
     <RootNamespace>XylthDebuggingTools</RootNamespace>
+    <ProjectGuid>{8cf4a3f0-1668-4ace-b3e3-c8e07d333653}</ProjectGuid>
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="Config\" />
@@ -1965,6 +1966,21 @@
     <Content Include="Src\XylthDebuggingTools\Classes\Xylth_XGAIBehavior.uc">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="XylthDebuggingTools.XComMod">
+      <SubType>Content</SubType>
+    </Content>
   </ItemGroup>
+  <Target Name="ReplaceModInfo" AfterTargets="Build">
+    <ItemGroup>
+      <ModInfoFiles Include="@(Content)" Condition="'%(Extension)' == '.XComMod'">
+        <TargetDir>$(OutputDir)</TargetDir>
+        <TargetPath>$(OutputDir)%(Filename)%(Extension)</TargetPath>
+      </ModInfoFiles>
+    </ItemGroup>
+    <Message Importance="High" Text="Replacing mod info..." />
+    <Copy SourceFiles="@(ModInfoFiles)" SkipUnchangedFiles="true" DestinationFiles="%(TargetPath)">
+      <Output TaskParameter="CopiedFiles" ItemName="_CopiedFiles" />
+    </Copy>
+  </Target>
   <Import Project="$(MSBuildLocalExtensionPath)\XCOM2.targets" />
 </Project>
