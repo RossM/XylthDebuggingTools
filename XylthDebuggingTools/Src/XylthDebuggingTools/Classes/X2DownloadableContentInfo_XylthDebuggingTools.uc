@@ -390,3 +390,36 @@ exec function DumpXPInfo()
 			OfficerBonusKillsValue.fValue);
 	}
 }
+
+exec function CompleteActions(optional name ClassName)
+{
+	local X2Action Action;
+	foreach `XComGRI.AllActors(class'X2Action', Action)
+	{
+		if (ClassName != '' && !Action.IsA(ClassName))
+			continue;
+
+		Action.CompleteAction();
+	}
+}
+
+exec function RemoveDeadUnits()
+{
+	local XComGameStateHistory History;
+	local XComGameState_Unit UnitState;
+	local XComGameState NewGameState;
+
+	History = `XCOMHISTORY;
+	NewGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("RemoveDeadUnits");
+
+	foreach History.IterateByClassType(class'XComGameState_Unit', UnitState)
+	{
+		if (!UnitState.IsInPlay())
+			NewGameState.RemoveStateObject(UnitState.ObjectID);
+	}
+
+	if (NewGameState.GetNumGameStateObjects() > 0)
+		`GAMERULES.SubmitGameState(NewGameState);
+	else
+		History.CleanupPendingGameState(NewGameState);
+}
