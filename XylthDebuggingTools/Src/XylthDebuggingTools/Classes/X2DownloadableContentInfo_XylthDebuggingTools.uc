@@ -423,3 +423,54 @@ exec function RemoveDeadUnits()
 	else
 		History.CleanupPendingGameState(NewGameState);
 }
+
+static function ReceivedStatsKVP( bool Success, array<string> GlobalKeys, array<int> GlobalValues, array<string> UserKeys, array<int> UserValues )
+{
+	local string resultStr;
+	local int i;
+
+	//if (GlobalKeys.Length > 0)
+		//resultStr $= "\n[global]\n";
+	for (i = 0; i < GlobalKeys.Length; i++)
+	{
+		//resultStr $= GlobalKeys[i] @ "=" @ GlobalValues[i] $ "\n";
+		`Log(GlobalKeys[i] @ "=" @ GlobalValues[i]);
+	}
+
+	//if (UserKeys.Length > 0)
+		//resultStr $= "\n[user]\n";
+	for (i = 0; i < UserKeys.Length; i++)
+	{
+		// resultStr $= UserKeys[i] @ "=" @ UserValues[i] $ "\n";
+	}
+	
+	//`log(resultStr);
+}
+
+exec function DumpAnalyticsValues()
+{
+	local XComGameState_Analytics Analytics;
+
+	Analytics = XComGameState_Analytics(`XCOMHISTORY.GetSingleGameStateObjectForClass( class'XComGameState_Analytics' ));
+
+	Analytics.DumpValues();
+}
+
+exec function DumpGlobalValues()
+{
+	local AnalyticsManager AnalyticsManager;
+	local X2FiraxisLiveClient LiveClient;
+
+	AnalyticsManager = `XANALYTICS;
+	LiveClient = `FXSLIVE;
+
+	if (AnalyticsManager.WaitingOnWorldStats())
+	{
+		`Log("Still waiting on AnalyticsManager, please wait...");
+		return;
+	}
+
+	LiveClient.AddReceivedStatsKVPDelegate( ReceivedStatsKVP );
+
+	AnalyticsManager.DebugDoEndgameStats(false);
+}
